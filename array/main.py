@@ -293,6 +293,45 @@ def solve_ode_rk4(f, y0, t0, t_end, steps=100):
         y += (dt / 6.0) * (k1 + 2.0 * k2 + 2.0 * k3 + k4)
         t += dt
         t_list.append(t)
+
+
         y_list.append(y)
 
     return Array(t_list), Array(y_list)
+
+
+    def to_emote(self, threshold=0.0, positive_emote="🟢", negative_emote="🔴"):
+        """
+        Converts array values into a visual emote map based on a threshold.
+        Great for visualizing 1D or 2D signals/matrices!
+        """
+        def _convert(item):
+            if isinstance(item, list):
+                return [_convert(x) for x in item]
+            return positive_emote if item >= threshold else negative_emote
+
+        emote_data = _convert(self.data)
+        
+        # Pretty print 2D emote grid
+        if self.ndim == 2:
+            return "\n".join(" ".join(row) for row in emote_data)
+        return str(emote_data)
+
+    def heat_map(self):
+        """
+        Converts array values into a grayscale/intensity block visualization.
+        """
+        blocks = ["░", "▒", "▓", "█"]
+        min_v, max_v = self.min(), self.max()
+        rng = (max_v - min_v) if max_v != min_v else 1.0
+
+        def _map_block(x):
+            norm = (x - min_v) / rng
+            idx = min(int(norm * len(blocks)), len(blocks) - 1)
+            return blocks[idx]
+
+        if self.ndim == 1:
+            return "".join(_map_block(x) for x in self.flatten().data)
+        elif self.ndim == 2:
+            return "\n".join("".join(_map_block(x) for x in row) for row in self.data)
+        return str(self.data)
