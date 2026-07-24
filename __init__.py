@@ -1,2 +1,4 @@
-from .array import Array, zeros, ones, linspace, arange
-from .dataframe import DataFrame, Series, read_csv
+from .array.main import *
+from .data.main import *
+from .math_functions.main import *
+from .toolkit.main import *
